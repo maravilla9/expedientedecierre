@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Expediente de Cierre</title>
+<title>Checklist de Cierre de Proyecto</title>
 <style>
   @font-face {
     font-family:'Syne';
@@ -25,8 +25,7 @@
     --muted:#9AA0AE;
     --purple:#7C5CFF;
     --green:#34D399;
-    --red:#F87171;
-    --amber:#F0B94A;
+    --line:rgba(255,255,255,.18);
   }
   *{box-sizing:border-box;}
   body{
@@ -38,445 +37,258 @@
     color:var(--text);
     font-family:'Inter',sans-serif;
     min-height:100vh;
-    padding:48px 24px 80px;
+    padding:48px 24px 60px;
   }
-  .wrap{max-width:980px;margin:0 auto;}
+  .wrap{max-width:760px;margin:0 auto;}
 
-  header{margin-bottom:40px;}
-  .kicker{
-    font-family:'Syne',sans-serif;
-    font-weight:700;
-    font-size:14px;
-    letter-spacing:.02em;
-    color:var(--green);
-    margin:0 0 10px;
-  }
+  .top-logo{height:38px;width:auto;margin-bottom:24px;display:block;}
+  .subject{font-size:13px;color:var(--muted);margin:0 0 4px;}
+  .kicker{font-family:'Syne',sans-serif;font-weight:700;font-size:13px;letter-spacing:.02em;color:var(--green);margin:0 0 10px;}
   h1{
     font-family:'Syne',sans-serif;
     font-weight:800;
-    font-size:clamp(32px,5vw,52px);
+    font-size:clamp(28px,4.5vw,40px);
     letter-spacing:-.01em;
-    line-height:1.05;
+    line-height:1.08;
     color:#fff;
-    margin:0 0 16px;
-    max-width:100%;
+    margin:0 0 14px;
   }
-  header p{
+  .intro{color:var(--muted);font-size:15.5px;line-height:1.65;max-width:640px;margin:0 0 30px;}
+
+  .field-row{display:flex;gap:24px;flex-wrap:wrap;margin-bottom:34px;}
+  .field{flex:1;min-width:220px;}
+  .field label{
+    display:block;
+    font-family:'Syne',sans-serif;
+    font-weight:700;
+    font-size:12.5px;
     color:var(--muted);
-    font-size:16px;
-    line-height:1.6;
-    max-width:560px;
-    margin:0;
-  }
-
-  .progress{
-    display:flex;
-    gap:6px;
-    margin:28px 0 36px;
-  }
-  .dot{
-    height:6px;
-    flex:1;
-    border-radius:3px;
-    background:rgba(255,255,255,.09);
-    transition:background .3s ease;
-  }
-  .dot.done{background:var(--green);}
-  .dot.current{background:var(--purple);}
-
-  .case-card{
-    background:var(--panel);
-    border:1px solid var(--panel-border);
-    border-radius:14px;
-    padding:28px 30px;
-    margin-bottom:28px;
-  }
-  .case-label{
-    font-family:'Syne',sans-serif;
-    font-weight:700;
-    font-size:12px;
-    color:var(--purple);
-    margin:0 0 10px;
-  }
-  .case-text{
-    font-size:17px;
-    line-height:1.65;
-    margin:0;
-  }
-  .case-text b{color:var(--text);font-weight:600;}
-
-  .prompt{
-    font-family:'Syne',sans-serif;
-    font-weight:700;
-    font-size:15px;
-    color:var(--text);
-    margin:0 0 18px;
-  }
-
-  .folders{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
-    gap:14px;
-  }
-  .folder{
-    position:relative;
-    background:rgba(255,255,255,.03);
-    border:1px solid var(--panel-border);
-    border-radius:0 10px 10px 10px;
-    padding:22px 18px 20px;
-    cursor:pointer;
-    text-align:left;
-    color:var(--text);
-    font-family:'Inter',sans-serif;
-    transition:transform .15s ease, border-color .15s ease, background .15s ease;
-  }
-  .folder::before{
-    content:'';
-    position:absolute;
-    top:-11px;
-    left:0;
-    width:58%;
-    height:11px;
-    background:rgba(255,255,255,.03);
-    border:1px solid var(--panel-border);
-    border-bottom:none;
-    border-radius:6px 6px 0 0;
-  }
-  .folder:hover{
-    transform:translateY(-2px);
-    border-color:rgba(255,255,255,.22);
-    background:rgba(255,255,255,.055);
-  }
-  .folder:disabled{cursor:default;}
-  .folder-name{
-    font-weight:600;
-    font-size:14.5px;
-    line-height:1.35;
-    display:block;
-  }
-  .folder.correct{
-    border-color:var(--green);
-    background:rgba(52,211,153,.08);
-  }
-  .folder.correct::before{border-color:var(--green);}
-  .folder.wrong{
-    border-color:var(--red);
-    background:rgba(248,113,113,.08);
-  }
-  .folder.wrong::before{border-color:var(--red);}
-  .folder.dim{opacity:.35;}
-
-  .feedback{
-    margin-top:22px;
-    padding:18px 20px;
-    border-radius:10px;
-    font-size:15px;
-    line-height:1.6;
-    display:none;
-  }
-  .feedback.show{display:block;}
-  .feedback.ok{background:rgba(52,211,153,.09);border:1px solid rgba(52,211,153,.35);}
-  .feedback.no{background:rgba(248,113,113,.09);border:1px solid rgba(248,113,113,.35);}
-  .feedback .tag{
-    font-family:'Syne',sans-serif;
-    font-weight:700;
-    font-size:13px;
-    display:block;
     margin-bottom:6px;
   }
-  .feedback.ok .tag{color:var(--green);}
-  .feedback.no .tag{color:var(--red);}
-
-  .next-btn{
-    margin-top:22px;
-    font-family:'Syne',sans-serif;
-    font-weight:700;
-    font-size:14px;
-    color:var(--bg);
-    background:var(--green);
-    border:none;
-    border-radius:8px;
-    padding:12px 22px;
-    cursor:pointer;
-    display:none;
-  }
-  .next-btn.show{display:inline-block;}
-  .next-btn:hover{filter:brightness(1.08);}
-
-  .result{
-    text-align:center;
-    padding:20px 0;
-    display:none;
-  }
-  .result.show{display:block;}
-  .result .big{
-    font-family:'Syne',sans-serif;
-    font-weight:800;
-    font-size:clamp(40px,7vw,64px);
-    color:var(--green);
-    margin:0;
-  }
-  .result p{color:var(--muted);font-size:16px;max-width:480px;margin:10px auto 26px;}
-  .restart-btn{
-    font-family:'Syne',sans-serif;
-    font-weight:700;
-    font-size:14px;
-    color:var(--text);
+  .field input{
+    width:100%;
     background:transparent;
+    border:none;
+    border-bottom:1px solid var(--line);
+    color:var(--text);
+    font-size:15px;
+    font-family:'Inter',sans-serif;
+    padding:6px 2px;
+    outline:none;
+  }
+  .field input:focus{border-color:var(--purple);}
+
+  .section{margin-bottom:30px;}
+  .section-head{
+    font-family:'Syne',sans-serif;
+    font-weight:700;
+    font-size:14.5px;
+    color:#fff;
+    background:var(--purple);
+    padding:10px 16px;
+    border-radius:6px;
+    margin:0 0 10px;
+  }
+  .section-sub{
+    color:var(--muted);
+    font-size:13.5px;
+    font-style:italic;
+    margin:0 0 14px;
+  }
+  .item{
+    display:flex;
+    align-items:flex-start;
+    gap:12px;
+    padding:9px 0;
+    cursor:pointer;
+  }
+  .item input[type=checkbox]{
+    appearance:none;
+    -webkit-appearance:none;
+    width:19px;
+    height:19px;
+    flex:none;
+    margin-top:2px;
+    border:1.5px solid var(--line);
+    border-radius:4px;
+    background:transparent;
+    cursor:pointer;
+    position:relative;
+  }
+  .item input[type=checkbox]:checked{
+    background:var(--green);
+    border-color:var(--green);
+  }
+  .item input[type=checkbox]:checked::after{
+    content:'';
+    position:absolute;
+    left:5.5px; top:1.5px;
+    width:5px; height:9px;
+    border:solid var(--bg);
+    border-width:0 2px 2px 0;
+    transform:rotate(40deg);
+  }
+  .item span{font-size:15px;line-height:1.5;}
+
+  .reflection{margin-top:36px;}
+  .reflection-title{
+    font-family:'Syne',sans-serif;
+    font-weight:700;
+    font-size:16px;
+    color:#fff;
+    margin:0 0 8px;
+    padding-bottom:10px;
+    border-bottom:1px solid var(--panel-border);
+  }
+  .reflection p{color:var(--muted);font-size:15px;line-height:1.6;margin:14px 0 16px;}
+  .reflection textarea{
+    width:100%;
+    min-height:120px;
+    background:var(--panel);
     border:1px solid var(--panel-border);
     border-radius:8px;
-    padding:12px 22px;
-    cursor:pointer;
+    color:var(--text);
+    font-family:'Inter',sans-serif;
+    font-size:15px;
+    line-height:1.6;
+    padding:14px;
+    resize:vertical;
+    outline:none;
   }
-  .restart-btn:hover{border-color:rgba(255,255,255,.35);}
+  .reflection textarea:focus{border-color:var(--purple);}
 
-  .hidden{display:none;}
-
-  .top-logo{
-    display:block;
-    height:42px;
-    width:auto;
-    margin-bottom:26px;
-    opacity:1;
+  .actions{
+    display:flex;
+    gap:12px;
+    margin-top:34px;
   }
-
-  .subject{
-    font-size:13px;
-    color:var(--muted);
-    margin:0 0 4px;
-    letter-spacing:.01em;
-  }
-
-  footer{
-    max-width:980px;
-    margin:56px auto 0;
-    padding-top:26px;
-    border-top:1px solid var(--panel-border);
-  }
-  footer .why-title{
+  .btn{
     font-family:'Syne',sans-serif;
     font-weight:700;
     font-size:14px;
+    border-radius:8px;
+    padding:12px 22px;
+    cursor:pointer;
+    border:1px solid var(--panel-border);
+    background:transparent;
     color:var(--text);
-    margin:0 0 8px;
   }
-  footer .why-text{
-    color:var(--muted);
-    font-size:14.5px;
-    line-height:1.6;
-    max-width:600px;
-    margin:0 0 22px;
-  }
-  .footer-bottom{
+  .btn.primary{background:var(--green);color:var(--bg);border:none;}
+  .btn:hover{border-color:rgba(255,255,255,.35);}
+  .btn.primary:hover{filter:brightness(1.08);}
+
+  footer{
+    max-width:760px;
+    margin:44px auto 0;
+    padding-top:20px;
+    border-top:1px solid var(--panel-border);
     display:flex;
     align-items:center;
     justify-content:space-between;
     flex-wrap:wrap;
-    gap:12px;
+    gap:10px;
   }
-  .footer-logo{
-    height:32px;
-    width:auto;
-    opacity:.85;
-  }
-  .footer-credit{
-    font-size:12.5px;
-    color:var(--muted);
-  }
+  footer img{height:26px;width:auto;opacity:.85;}
+  footer .credit{font-size:12.5px;color:var(--muted);}
 
   @media (max-width:600px){
-    body{padding:32px 16px 60px;}
-    .case-card{padding:22px 20px;}
-    .footer-bottom{flex-direction:column;align-items:flex-start;}
+    body{padding:32px 16px 50px;}
+    .field-row{gap:16px;}
+  }
+
+  /* ---- IMPRESIÓN ---- */
+  @media print{
+    body{
+      background:#fff;
+      color:#111;
+      padding:0;
+      font-size:12.5px;
+    }
+    .wrap{max-width:100%;}
+    .top-logo{height:30px;}
+    .kicker{color:#1FA971;}
+    h1{color:#111;font-size:24px;}
+    .intro{color:#444;}
+    .field label{color:#666;}
+    .field input{color:#111;border-bottom:1px solid #999;}
+    .section-head{background:#4B2E9E !important;-webkit-print-color-adjust:exact;print-color-adjust:exact;color:#fff !important;}
+    .section-sub{color:#555;}
+    .item input[type=checkbox]{border-color:#888;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    .item input[type=checkbox]:checked{background:#1FA971 !important;border-color:#1FA971 !important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    .item span{color:#111;}
+    .reflection-title{color:#111;border-bottom:1px solid #ccc;}
+    .reflection p{color:#555;}
+    .reflection textarea{background:#fff;border:1px solid #999;color:#111;min-height:90px;}
+    .actions{display:none;}
+    footer{border-top:1px solid #ccc;}
+    footer .credit{color:#555;}
+    @page{margin:14mm;}
   }
 </style>
 </head>
 <body>
 <div class="wrap">
 
-  <header>
-    <img class="top-logo" src="https://i.postimg.cc/RZPk89ND/banner-supeior-ed-continua.png" alt="UTEL Educación Continua">
-    <p class="subject">Monitoreo &amp; Control y Cierre</p>
-    <p class="kicker">Semana 3 · Fase de Cierre</p>
-    <h1>Expediente de Cierre</h1>
-    <p>Cada caso quedó técnicamente terminado, pero le falta un documento para cerrarse de forma correcta. Lee la situación y elige la carpeta que le corresponde.</p>
-  </header>
+  <img class="top-logo" src="https://i.postimg.cc/RZPk89ND/banner-supeior-ed-continua.png" alt="UTEL Educación Continua">
+  <p class="subject">Monitoreo &amp; Control y Cierre</p>
+  <p class="kicker">Semana 3 · Fase de Cierre</p>
+  <h1>Checklist de Cierre de Proyecto</h1>
+  <p class="intro">Piensa en un proyecto real tuyo (de trabajo, personal o académico) que ya terminó en los hechos, pero que nunca cerraste formalmente. Revisa las cuatro salidas del proceso "Cerrar el Proyecto o Fase" y marca cuáles sí tienes y cuáles te faltan. Al terminar, imprime o guarda este documento como PDF para entregarlo.</p>
 
-  <div class="progress" id="progress"></div>
-
-  <div id="game">
-    <div class="case-card">
-      <p class="case-label" id="caseLabel">CASO 1</p>
-      <p class="case-text" id="caseText"></p>
+  <div class="field-row">
+    <div class="field">
+      <label for="proyecto">Proyecto elegido</label>
+      <input type="text" id="proyecto" placeholder="Nombre del proyecto">
     </div>
-
-    <p class="prompt">¿Qué documento falta para cerrar este caso?</p>
-    <div class="folders" id="folders"></div>
-
-    <div class="feedback" id="feedback">
-      <span class="tag" id="feedbackTag"></span>
-      <span id="feedbackText"></span>
+    <div class="field">
+      <label for="fecha">Fecha en que "terminó" en la práctica</label>
+      <input type="text" id="fecha" placeholder="dd/mm/aaaa">
     </div>
-
-    <button class="next-btn" id="nextBtn">Siguiente caso</button>
   </div>
 
-  <div class="result" id="result">
-    <p class="big" id="score"></p>
-    <p>Estos cinco documentos son los que evitan que un proyecto quede abierto para siempre: acta de aceptación, informe final, liberación de recursos, cierre de contrato y lecciones aprendidas.</p>
-    <button class="restart-btn" id="restartBtn">Revisar de nuevo</button>
+  <div class="section">
+    <p class="section-head">1&nbsp;&nbsp;Actualización de documentos del proyecto</p>
+    <p class="section-sub">Incluye el registro de lecciones aprendidas y demás documentos que deben quedar actualizados con lo que realmente pasó.</p>
+    <label class="item"><input type="checkbox"><span>Existe un registro de lecciones aprendidas de este proyecto.</span></label>
+    <label class="item"><input type="checkbox"><span>Los documentos del proyecto reflejan lo que realmente sucedió (no solo lo planeado).</span></label>
+  </div>
+
+  <div class="section">
+    <p class="section-head">2&nbsp;&nbsp;Transferencia del producto, servicio o resultado</p>
+    <p class="section-sub">El resultado final debe quedar formalmente en manos de quien lo va a usar o recibir.</p>
+    <label class="item"><input type="checkbox"><span>El resultado ya está en manos de quien debía recibirlo.</span></label>
+    <label class="item"><input type="checkbox"><span>Existe constancia (firma, correo, acta) de que se entregó formalmente.</span></label>
+  </div>
+
+  <div class="section">
+    <p class="section-head">3&nbsp;&nbsp;Informe final</p>
+    <p class="section-sub">Un documento único que resuma qué se logró, qué no, y en qué condiciones cerró el proyecto.</p>
+    <label class="item"><input type="checkbox"><span>Existe un informe final del proyecto.</span></label>
+    <label class="item"><input type="checkbox"><span>Ese informe explica claramente qué se cumplió y qué quedó pendiente.</span></label>
+  </div>
+
+  <div class="section">
+    <p class="section-head">4&nbsp;&nbsp;Actualización de activos de la organización</p>
+    <p class="section-sub">Lo aprendido debe quedar disponible para futuros proyectos, no solo en la memoria de quien participó.</p>
+    <label class="item"><input type="checkbox"><span>Lo aprendido en este proyecto quedó documentado en algún lugar accesible para otros.</span></label>
+    <label class="item"><input type="checkbox"><span>Si alguien más iniciara un proyecto similar, podría consultar esta experiencia.</span></label>
+  </div>
+
+  <div class="reflection">
+    <p class="reflection-title">Reflexión final</p>
+    <p>De las cuatro salidas anteriores, ¿cuál es la que más comúnmente te falta a ti (o a tu equipo) cuando un proyecto termina? ¿Por qué crees que pasa eso?</p>
+    <textarea placeholder="Escribe aquí tu respuesta..."></textarea>
+  </div>
+
+  <div class="actions">
+    <button class="btn primary" onclick="window.print()">Imprimir / Guardar como PDF</button>
   </div>
 
   <footer>
-    <p class="why-title">¿Para qué sirve esta herramienta?</p>
-    <p class="why-text">Cada caso está basado en una situación real de cierre mal hecho. El ejercicio no busca que memorices los cinco documentos, sino que reconozcas la señal: cuando un proyecto sigue "abierto" sin razón aparente, casi siempre es porque falta uno de estos pasos formales, no porque falte trabajo por hacer.</p>
-    <div class="footer-bottom">
-      <img class="footer-logo" src="https://i.postimg.cc/RZPk89ND/banner-supeior-ed-continua.png" alt="UTEL Educación Continua">
-      <p class="footer-credit">Docente: Dr. Armando Sandoval Maravilla</p>
-    </div>
+    <img src="https://i.postimg.cc/RZPk89ND/banner-supeior-ed-continua.png" alt="UTEL Educación Continua">
+    <p class="credit">Docente: Dr. Armando Sandoval Maravilla</p>
   </footer>
 
 </div>
-
-<script>
-const DOCS = [
-  "Acta de aceptación",
-  "Informe final",
-  "Liberación de recursos",
-  "Cierre de contrato",
-  "Lecciones aprendidas"
-];
-
-const CASES = [
-  {
-    text: 'El sistema que SoftNova desarrolló para la clínica dental ya está en producción hace dos semanas. La dueña de la clínica sigue preguntando si el proyecto ya terminó porque <b>nadie ha firmado nada que confirme que lo recibió a conformidad</b>.',
-    answer: "Acta de aceptación",
-    explain: 'Sin este documento firmado, no existe constancia de que el cliente aceptó el entregable. El sistema funciona, pero administrativamente el proyecto sigue "abierto".'
-  },
-  {
-    text: 'El equipo de desarrollo de SoftNova fue reasignado a otro cliente apenas terminaron las pruebas. <b>Nadie documentó qué salió bien, qué se retrasó, ni qué errores conviene evitar</b> en el próximo proyecto similar.',
-    answer: "Lecciones aprendidas",
-    explain: 'Sin esta actualización, la organización pierde el conocimiento que costó generar durante el proyecto y corre el riesgo de repetir los mismos errores.'
-  },
-  {
-    text: 'El proveedor de hosting que SoftNova contrató específicamente para este proyecto <b>sigue activo y facturando</b>, porque nadie avisó formalmente que ya no se necesita.',
-    answer: "Cierre de contrato",
-    explain: 'Un contrato con un tercero no se apaga solo. Si no se cierra formalmente, la organización sigue pagando por algo que ya no usa.'
-  },
-  {
-    text: 'Varias empresas financiadas a través de Play Business dejaron de pagar a sus inversionistas. Años después, <b>no existe un documento único que explique qué pasó con el dinero</b> ni cómo terminó cada caso.',
-    answer: "Informe final",
-    explain: 'Un informe final resume, en un solo lugar, qué se logró y qué no. Su ausencia es parte de por qué estos casos se sienten inconclusos para quienes invirtieron.'
-  },
-  {
-    text: 'Un despacho de consultoría pagó a un proveedor externo para migrar su CRM. El trabajo ya se entregó, pero <b>el equipo técnico sigue asignado "por si algo falla"</b> tres meses después, cobrando como si el proyecto siguiera activo.',
-    answer: "Liberación de recursos",
-    explain: 'Sin liberar formalmente al equipo, la organización sigue gastando en un proyecto que, en los hechos, ya terminó.'
-  }
-];
-
-let current = 0;
-let correctCount = 0;
-let answered = false;
-
-const progressEl = document.getElementById('progress');
-const caseLabel = document.getElementById('caseLabel');
-const caseText = document.getElementById('caseText');
-const foldersEl = document.getElementById('folders');
-const feedbackEl = document.getElementById('feedback');
-const feedbackTag = document.getElementById('feedbackTag');
-const feedbackText = document.getElementById('feedbackText');
-const nextBtn = document.getElementById('nextBtn');
-const gameEl = document.getElementById('game');
-const resultEl = document.getElementById('result');
-const scoreEl = document.getElementById('score');
-const restartBtn = document.getElementById('restartBtn');
-
-function buildProgress(){
-  progressEl.innerHTML = '';
-  CASES.forEach((_, i) => {
-    const d = document.createElement('div');
-    d.className = 'dot';
-    d.id = 'dot-' + i;
-    progressEl.appendChild(d);
-  });
-}
-
-function updateProgress(){
-  CASES.forEach((_, i) => {
-    const d = document.getElementById('dot-' + i);
-    d.className = 'dot' + (i < current ? ' done' : i === current ? ' current' : '');
-  });
-}
-
-function renderCase(){
-  answered = false;
-  const c = CASES[current];
-  caseLabel.textContent = 'CASO ' + (current + 1) + ' DE ' + CASES.length;
-  caseText.innerHTML = c.text;
-  feedbackEl.className = 'feedback';
-  nextBtn.className = 'next-btn';
-  updateProgress();
-
-  foldersEl.innerHTML = '';
-  DOCS.forEach(doc => {
-    const btn = document.createElement('button');
-    btn.className = 'folder';
-    btn.innerHTML = '<span class="folder-name">' + doc + '</span>';
-    btn.addEventListener('click', () => handleAnswer(doc, btn));
-    foldersEl.appendChild(btn);
-  });
-}
-
-function handleAnswer(choice, btn){
-  if (answered) return;
-  answered = true;
-  const c = CASES[current];
-  const allFolders = foldersEl.querySelectorAll('.folder');
-  allFolders.forEach(f => f.disabled = true);
-
-  if (choice === c.answer){
-    btn.classList.add('correct');
-    correctCount++;
-    feedbackEl.className = 'feedback show ok';
-    feedbackTag.textContent = 'Correcto.';
-  } else {
-    btn.classList.add('wrong');
-    allFolders.forEach(f => {
-      if (f.textContent.trim() === c.answer) f.classList.add('correct');
-    });
-    feedbackEl.className = 'feedback show no';
-    feedbackTag.textContent = 'No exactamente.';
-  }
-  allFolders.forEach(f => {
-    if (!f.classList.contains('correct') && !f.classList.contains('wrong')) f.classList.add('dim');
-  });
-  feedbackText.textContent = c.explain;
-  nextBtn.classList.add('show');
-}
-
-nextBtn.addEventListener('click', () => {
-  current++;
-  if (current < CASES.length){
-    renderCase();
-  } else {
-    gameEl.style.display = 'none';
-    resultEl.classList.add('show');
-    scoreEl.textContent = correctCount + ' / ' + CASES.length;
-  }
-});
-
-restartBtn.addEventListener('click', () => {
-  current = 0;
-  correctCount = 0;
-  resultEl.classList.remove('show');
-  gameEl.style.display = 'block';
-  buildProgress();
-  renderCase();
-});
-
-buildProgress();
-renderCase();
-</script>
 </body>
 </html>
